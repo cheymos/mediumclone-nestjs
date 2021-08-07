@@ -8,5 +8,5 @@ export const ormconfig: ConnectionOptions = {
   username: 'mediumclone',
   password: 'mediumclone',
   applicationName: 'MediumClone on Nest!',
-  entities: [__dirname + '/**/*.model{.ts,.js}'],
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
 };
