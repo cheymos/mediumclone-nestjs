@@ -9,6 +9,9 @@ export class UserEntity {
   @Column({ type: 'text', unique: true })
   email: string;
 
+  @Column({ type: 'text' })
+  username: string;
+
   @Column({ type: 'text', nullable: true })
   bio: string;
 
