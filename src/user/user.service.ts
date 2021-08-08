@@ -50,6 +50,10 @@ export class UserService {
     return user;
   }
 
+  findById(id: number): Promise<UserEntity> {
+    return this.userRepository.findOne(id);
+  }
+
   buildUserResponse(user: UserEntity): IUserResponse {
     return {
       user: {
