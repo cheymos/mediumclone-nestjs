@@ -5,6 +5,7 @@ import { UserEntity } from 'src/user/user.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { ArticleEntity } from './article.entity';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { UpdateArticleDto } from './dto/update-user.dto';
 import { IArticleResponse } from './types/article-response.interface';
 
 @Injectable()
@@ -26,24 +27,35 @@ export class ArticleService {
     const article = await this.articleReposity.findOne({ slug });
 
     if (!article) {
-      throw new HttpException('Article not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Article does not exist', HttpStatus.NOT_FOUND);
     }
 
     return article;
   }
 
   async delete(slug: string, userId: number): Promise<DeleteResult> {
-    const article = await this.findBySlag(slug);
+    const article = await this.checkOnAuthorship(slug, userId);
 
-    if (!article) {
-      throw new HttpException('Article does not exist', HttpStatus.NOT_FOUND);
-    }
+    return this.articleReposity.delete({ id: article.id });
+  }
+
+  async update(slug: string, updateArticleDto: UpdateArticleDto, userId: number): Promise<ArticleEntity> {
+    const article = await this.checkOnAuthorship(slug, userId);
+
+    Object.assign(article, updateArticleDto);
+
+    return this.articleReposity.save(article);
+  }
+
+  // !: Maybe create guard?
+  private async checkOnAuthorship(slug: string, userId: number): Promise<ArticleEntity> {
+    const article = await this.findBySlag(slug);
 
     if (article.author.id !== userId) {
       throw new HttpException('You are not an author', HttpStatus.FORBIDDEN);
     }
 
-    return this.articleReposity.delete({ id: article.id });
+    return article;
   }
 
   buildArticleResponse(article: ArticleEntity): IArticleResponse {
