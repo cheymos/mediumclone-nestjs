@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import slugify from 'slugify';
 import { UserEntity } from 'src/user/user.entity';
@@ -9,7 +9,7 @@ import { IArticleResponse } from './types/article-response.interface';
 
 @Injectable()
 export class ArticleService {
-  constructor(@InjectRepository(ArticleEntity) private readonly articleReposito: Repository<ArticleEntity>) {}
+  constructor(@InjectRepository(ArticleEntity) private readonly articleReposity: Repository<ArticleEntity>) {}
 
   create(currentUser: UserEntity, createArticleDto: CreateArticleDto): Promise<ArticleEntity> {
     const article = new ArticleEntity();
@@ -19,7 +19,17 @@ export class ArticleService {
     article.slug = this.generateSlug(article.title);
     article.author = currentUser;
 
-    return this.articleReposito.save(article);
+    return this.articleReposity.save(article);
+  }
+
+  async findBySlag(slug: string): Promise<ArticleEntity> {
+    const article = await this.articleReposity.findOne({ slug });
+
+    if (!article) {
+      throw new HttpException('Article not found', HttpStatus.NOT_FOUND);
+    }
+
+    return article;
   }
 
   buildArticleResponse(article: ArticleEntity): IArticleResponse {
