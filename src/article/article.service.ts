@@ -2,15 +2,51 @@ import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm';
 import slugify from 'slugify';
 import { UserEntity } from 'src/user/user.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, getRepository, Repository } from 'typeorm';
 import { ArticleEntity } from './article.entity';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-user.dto';
 import { IArticleResponse } from './types/article-response.interface';
+import { IArticlesResponse } from './types/articles-response.interface';
 
 @Injectable()
 export class ArticleService {
   constructor(@InjectRepository(ArticleEntity) private readonly articleReposity: Repository<ArticleEntity>) {}
+
+  async findAll(query: any, userId: number): Promise<IArticlesResponse> {
+    const queryBuilder = getRepository(ArticleEntity)
+      .createQueryBuilder('articles')
+      .leftJoinAndSelect('articles.author', 'author')
+      .orderBy('articles.createdAt', 'DESC');
+
+    const articlesCount = await queryBuilder.getCount();
+
+    if (query.tag) {
+      queryBuilder.andWhere(':tag = ANY("tagList")', { tag: query.tag });
+    }
+
+    if (query.author) {
+      const author = await getRepository(UserEntity).findOne({ username: query.author });
+
+      queryBuilder.andWhere('articles.authorId = :id', { id: author?.id ?? -1 });
+    }
+
+    if (query.favourited) {
+      // See you soon!
+    }
+
+    if (query.limit) {
+      queryBuilder.limit(query.limit);
+    }
+
+    if (query.offset) {
+      queryBuilder.offset(query.offset);
+    }
+
+    const articles = await queryBuilder.getMany();
+
+    return { articles, articlesCount };
+  }
 
   create(currentUser: UserEntity, createArticleDto: CreateArticleDto): Promise<ArticleEntity> {
     const article = new ArticleEntity();
