@@ -103,6 +103,23 @@ export class ArticleService {
     return article;
   }
 
+  async deleteFromFavorites(slug: string, userId: number): Promise<ArticleEntity> {
+    const user = await this.userRepository.findOne({ id: userId }, { relations: ['favorites'] });
+    const article = await this.findBySlag(slug);
+
+    const articleIdx = user.favorites.findIndex((articleInFavorites) => articleInFavorites.id === article.id);
+
+    if (articleIdx >= 0) {
+      user.favorites.splice(articleIdx, 1);
+      article.favoritesCount--;
+
+      await this.articleReposity.save(article);
+      await this.userRepository.save(user);
+    }
+
+    return article;
+  }
+
   // !: Maybe create guard?
   private async checkOnAuthorship(slug: string, userId: number): Promise<ArticleEntity> {
     const article = await this.findBySlag(slug);
