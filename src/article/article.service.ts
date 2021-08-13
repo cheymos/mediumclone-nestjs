@@ -1,8 +1,8 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import slugify from 'slugify';
 import { UserEntity } from 'src/user/user.entity';
-import { Any, DeleteResult, getRepository, Repository } from 'typeorm';
+import { DeleteResult, getRepository, Repository } from 'typeorm';
 import { ArticleEntity } from './article.entity';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-user.dto';
@@ -34,8 +34,12 @@ export class ArticleService {
       queryBuilder.andWhere('articles.authorId = :id', { id: author?.id ?? -1 });
     }
 
-    if (query.favourited) {
-      // See you soon!
+    if (query.favorited) {
+      const user = await this.userRepository.findOne({ username: query.favorited }, { relations: ['favorites'] });
+
+      const ids = user?.favorites.map((article) => article.id) ?? [];
+
+      queryBuilder.andWhere('articles.id = ANY(:ids)', { ids });
     }
 
     if (query.limit) {
@@ -46,9 +50,22 @@ export class ArticleService {
       queryBuilder.offset(query.offset);
     }
 
-    const articles = await queryBuilder.getMany();
+    let favoritesIds: number[] = [];
 
-    return { articles, articlesCount };
+    if (userId) {
+      const currentUser = await this.userRepository.findOne(userId, { relations: ['favorites'] });
+
+      favoritesIds = currentUser.favorites.map((favorite) => favorite.id);
+    }
+
+    const articles = await queryBuilder.getMany();
+    const articlesWithFavorites = articles.map((article) => {
+      const favorited = favoritesIds.includes(article.id);
+
+      return { ...article, favorited };
+    });
+
+    return { articles: articlesWithFavorites, articlesCount };
   }
 
   create(currentUser: UserEntity, createArticleDto: CreateArticleDto): Promise<ArticleEntity> {

@@ -13,8 +13,8 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
-  async getArticles(@Query() query: any, @User() currentUserId: number | null): Promise<IArticlesResponse> {
-    return await this.articleService.findAll(query, currentUserId);
+  getArticles(@Query() query: any, @User() currentUserId: number | null): Promise<IArticlesResponse> {
+    return this.articleService.findAll(query, currentUserId);
   }
 
   @Post()
