@@ -2,7 +2,7 @@ import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm';
 import slugify from 'slugify';
 import { UserEntity } from 'src/user/user.entity';
-import { DeleteResult, getRepository, Repository } from 'typeorm';
+import { Any, DeleteResult, getRepository, Repository } from 'typeorm';
 import { ArticleEntity } from './article.entity';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-user.dto';
@@ -11,7 +11,10 @@ import { IArticlesResponse } from './types/articles-response.interface';
 
 @Injectable()
 export class ArticleService {
-  constructor(@InjectRepository(ArticleEntity) private readonly articleReposity: Repository<ArticleEntity>) {}
+  constructor(
+    @InjectRepository(ArticleEntity) private readonly articleReposity: Repository<ArticleEntity>,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+  ) {}
 
   async findAll(query: any, userId: number): Promise<IArticlesResponse> {
     const queryBuilder = getRepository(ArticleEntity)
@@ -81,6 +84,23 @@ export class ArticleService {
     Object.assign(article, updateArticleDto);
 
     return this.articleReposity.save(article);
+  }
+
+  async addToFavorites(slug: string, userId: number): Promise<ArticleEntity> {
+    const user = await this.userRepository.findOne({ id: userId }, { relations: ['favorites'] });
+    const article = await this.articleReposity.findOne({ slug });
+
+    const isNotFavotited = user.favorites.findIndex((articleInFavorites) => articleInFavorites.id === article.id) === -1;
+
+    if (isNotFavotited) {
+      article.favoritesCount++;
+      user.favorites.push(article);
+
+      await this.userRepository.save(user);
+      await this.articleReposity.save(article);
+    }
+
+    return article;
   }
 
   // !: Maybe create guard?
