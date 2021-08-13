@@ -88,7 +88,7 @@ export class ArticleService {
 
   async addToFavorites(slug: string, userId: number): Promise<ArticleEntity> {
     const user = await this.userRepository.findOne({ id: userId }, { relations: ['favorites'] });
-    const article = await this.articleReposity.findOne({ slug });
+    const article = await this.findBySlag(slug);
 
     const isNotFavotited = user.favorites.findIndex((articleInFavorites) => articleInFavorites.id === article.id) === -1;
 
