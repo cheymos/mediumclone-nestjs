@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
 export class CreateArticles1628692286526 implements MigrationInterface {
-    name = 'CreateArticles1628692286526'
+    name = 'CreateArticles1628689694820'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "articles" ("id" SERIAL NOT NULL, "slug" text NOT NULL, "title" text NOT NULL, "description" text NOT NULL, "body" text NOT NULL, "tagList" character varying(100) array, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "favoritesCount" integer NOT NULL DEFAULT '0', "authorId" integer, CONSTRAINT "PK_0a6e2c450d83e0b6052c2793334" PRIMARY KEY ("id"))`);
