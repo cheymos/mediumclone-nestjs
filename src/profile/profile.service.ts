@@ -1,4 +1,4 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
@@ -13,10 +13,18 @@ export class ProfileService {
     @InjectRepository(FollowEntity) private readonly followRepository: Repository<FollowEntity>,
   ) {}
 
-  async find(profileUsername: string, currentUserId: number): Promise<ProfileType> {
+  async find(profileUsername: string, currentUser: UserEntity): Promise<ProfileType> {
     const user = await this.findProfileByUsername(profileUsername);
 
-    return { ...user, following: false };
+    // Dont work!
+    // const follow = await this.followRepository.findOne({ follower: { id: currentUser.id }, following: { id: user.id } });
+
+    const follow = await this.followRepository
+      .createQueryBuilder()
+      .where({ follower: { id: currentUser.id }, following: { id: user.id } })
+      .getRawOne();
+
+    return { ...user, following: Boolean(follow) };
   }
 
   async followProfile(currentUser: UserEntity, profileUsername: string) {
@@ -37,6 +45,18 @@ export class ProfileService {
     }
 
     return { ...user, following: true };
+  }
+
+  async unfollowProfile(currentUser: UserEntity, profileUsername: string) {
+    const user = await this.findProfileByUsername(profileUsername);
+
+    if (user.id === currentUser.id) {
+      throw new HttpException('Follower and following cant be equal', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.followRepository.delete({ follower: currentUser, following: user });
+
+    return { ...user, following: false };
   }
 
   buildProfileResponse(profile: ProfileType): IProfileResponse {
