@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import slugify from 'slugify';
+import { FollowEntity } from 'src/profile/follow.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { DeleteResult, getRepository, Repository } from 'typeorm';
 import { ArticleEntity } from './article.entity';
@@ -14,6 +15,7 @@ export class ArticleService {
   constructor(
     @InjectRepository(ArticleEntity) private readonly articleReposity: Repository<ArticleEntity>,
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(FollowEntity) private readonly followRepository: Repository<FollowEntity>,
   ) {}
 
   async findAll(query: any, userId: number): Promise<IArticlesResponse> {
@@ -66,6 +68,34 @@ export class ArticleService {
     });
 
     return { articles: articlesWithFavorites, articlesCount };
+  }
+
+  async getFeed(currentUser: UserEntity, query: any): Promise<IArticlesResponse> {
+    const follows = await this.followRepository.find({ follower: currentUser });
+
+    if (follows.length === 0) {
+      return { articles: [], articlesCount: 0 };
+    }
+
+    const followingUserIds = follows.map((follow) => follow.following.id);
+
+    const queryBuilder = this.articleReposity
+      .createQueryBuilder('articles')
+      .leftJoinAndSelect('articles.author', 'author')
+      .where('articles.authorId IN(:...ids)', { ids: followingUserIds })
+      .orderBy('articles.createdAt', 'DESC');
+
+    if (query.limit) {
+      queryBuilder.limit(query.limit);
+    }
+
+    if (query.offset) {
+      queryBuilder.offset(query.offset);
+    }
+
+    const [articles, articlesCount] = await queryBuilder.getManyAndCount();
+
+    return { articles, articlesCount };
   }
 
   create(currentUser: UserEntity, createArticleDto: CreateArticleDto): Promise<ArticleEntity> {
