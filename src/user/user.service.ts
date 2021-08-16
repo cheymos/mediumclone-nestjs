@@ -15,11 +15,21 @@ export class UserService {
   constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+    const errorResponse = { errors: {} };
+
     const userByEmail = await this.userRepository.findOne({ email: createUserDto.email });
     const userByUsername = await this.userRepository.findOne({ username: createUserDto.username }); // TODO: Check using querybuilder*
 
+    if (userByEmail) {
+      errorResponse.errors['email'] = 'Has alrady been taken';
+    }
+
+    if (userByUsername) {
+      errorResponse.errors['username'] = 'Has alrady been taken';
+    }
+
     if (userByEmail || userByUsername) {
-      throw new HttpException('Email or username are taken', HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     const newUser = new UserEntity();
@@ -29,21 +39,21 @@ export class UserService {
   }
 
   async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+    const errorResponse = { errors: { 'email or password': 'Is invalid' } };
+
     const user = await this.userRepository.findOne(
       { email: loginUserDto.email },
       { select: ['id', 'email', 'username', 'bio', 'image', 'password'] },
     );
 
     if (!user) {
-      throw new HttpException('Email or password is incorrect', HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
-
-    console.log('user', user);
 
     const isPasswordCorrect = await compare(loginUserDto.password, user.password);
 
     if (!isPasswordCorrect) {
-      throw new HttpException('Email or password is incorrect', HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new HttpException(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     delete user.password;
