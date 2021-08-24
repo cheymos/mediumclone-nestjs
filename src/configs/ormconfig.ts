@@ -8,7 +8,7 @@ const ormconfig: ConnectionOptions = {
   username: 'nqcvjqcs',
   password: 'gdK0uX3W747fwXVKOn-JrJecnAP9wG4O',
   applicationName: 'MediumClone on Nest!',
-  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  entities: [__dirname + '/../modules/**/*.entity{.ts,.js}'],
   synchronize: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   cli: {

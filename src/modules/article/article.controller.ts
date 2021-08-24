@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes } from '@nestjs/common';
 import { BackandValidationPipe } from 'src/shared/pipes/backend-validation.pipe';
-import { User } from 'src/user/decorators/user.decorator';
-import { AuthGuard } from 'src/user/guards/auth.guard';
-import { UserEntity } from 'src/user/user.entity';
+import { User } from '../user/decorators/user.decorator';
+import { AuthGuard } from '../user/guards/auth.guard';
+import { UserEntity } from '../user/user.entity';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-user.dto';

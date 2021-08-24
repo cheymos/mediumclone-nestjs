@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import slugify from 'slugify';
-import { FollowEntity } from 'src/profile/follow.entity';
-import { UserEntity } from 'src/user/user.entity';
 import { DeleteResult, getRepository, Repository } from 'typeorm';
+import { FollowEntity } from '../profile/follow.entity';
+import { UserEntity } from '../user/user.entity';
 import { ArticleEntity } from './article.entity';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-user.dto';

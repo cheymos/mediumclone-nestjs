@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CanActivate, ExecutionContext, HttpCode, HttpException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpException } from '@nestjs/common';
 import { IExpressRequest } from 'src/types/expressRequest.interface';
 
 @Injectable()

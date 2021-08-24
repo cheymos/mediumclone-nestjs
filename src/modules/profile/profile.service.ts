@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
+import { UserEntity } from '../user/user.entity';
 import { FollowEntity } from './follow.entity';
 import { IProfileResponse } from './types/profile-response.interface';
 import { ProfileType } from './types/profile.type';

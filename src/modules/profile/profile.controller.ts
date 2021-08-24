@@ -1,7 +1,7 @@
-import { Controller, Delete, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
-import { User } from 'src/user/decorators/user.decorator';
-import { AuthGuard } from 'src/user/guards/auth.guard';
-import { UserEntity } from 'src/user/user.entity';
+import { Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { User } from '../user/decorators/user.decorator';
+import { AuthGuard } from '../user/guards/auth.guard';
+import { UserEntity } from '../user/user.entity';
 import { ProfileService } from './profile.service';
 import { IProfileResponse } from './types/profile-response.interface';
 

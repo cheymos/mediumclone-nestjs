@@ -4,11 +4,11 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './user.entity';
 import { sign } from 'jsonwebtoken';
-import { JWT_SECRET } from 'src/config';
 import { IUserResponse } from './types/user-response.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { compare } from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JWT_SECRET } from 'src/configs/config';
 
 @Injectable()
 export class UserService {

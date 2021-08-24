@@ -1,5 +1,5 @@
-import { UserEntity } from 'src/user/user.entity';
 import { Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { UserEntity } from '../user/user.entity';
 
 @Entity('follows')
 export class FollowEntity {
