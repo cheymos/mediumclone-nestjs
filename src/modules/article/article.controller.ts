@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes } from '@nestjs/common';
-import { BackandValidationPipe } from 'src/shared/pipes/backend-validation.pipe';
+import { BackandValidationPipe } from '../../shared/pipes/backend-validation.pipe';
 import { User } from '../user/decorators/user.decorator';
 import { AuthGuard } from '../user/guards/auth.guard';
 import { UserEntity } from '../user/user.entity';

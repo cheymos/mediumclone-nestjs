@@ -1,6 +1,6 @@
 import { Get, HttpCode, Put, UseGuards } from '@nestjs/common';
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
-import { BackandValidationPipe } from 'src/shared/pipes/backend-validation.pipe';
+import { BackandValidationPipe } from '../../shared/pipes/backend-validation.pipe';
 import { User } from './decorators/user.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';

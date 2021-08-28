@@ -8,7 +8,7 @@ import { IUserResponse } from './types/user-response.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { compare } from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JWT_SECRET } from 'src/configs/config';
+import { JWT_SECRET } from '../../configs/config';
 
 @Injectable()
 export class UserService {
