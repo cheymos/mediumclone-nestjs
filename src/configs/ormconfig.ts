@@ -1,12 +1,12 @@
-import { ConnectionOptions } from 'typeorm';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-const ormconfig: ConnectionOptions = {
+export const getOrmConfig = (): TypeOrmModuleOptions => ({
   type: 'postgres',
-  host: 'ella.db.elephantsql.com',
-  port: 5432,
-  database: 'nqcvjqcs',
-  username: 'nqcvjqcs',
-  password: 'gdK0uX3W747fwXVKOn-JrJecnAP9wG4O',
+  host: process.env.POSTGRES_HOST,
+  port: Number(process.env.POSTGRES_PORT),
+  database: process.env.POSTGRES_DB,
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
   applicationName: 'MediumClone on Nest!',
   entities: [__dirname + '/../modules/**/*.entity{.ts,.js}'],
   synchronize: false,
@@ -14,6 +14,4 @@ const ormconfig: ConnectionOptions = {
   cli: {
     migrationsDir: 'src/migrations',
   },
-};
-
-export default ormconfig;
+});

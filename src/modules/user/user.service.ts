@@ -8,7 +8,6 @@ import { IUserResponse } from './types/user-response.interface';
 import { LoginUserDto } from './dto/login-user.dto';
 import { compare } from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JWT_SECRET } from '../../configs/config';
 
 @Injectable()
 export class UserService {
@@ -85,6 +84,6 @@ export class UserService {
   private generateJwt(user: UserEntity): string {
     const { id, username, email } = user;
 
-    return sign({ id, username, email }, JWT_SECRET);
+    return sign({ id, username, email }, process.env.JWT_SECRET);
   }
 }

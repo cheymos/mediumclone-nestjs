@@ -1,8 +1,8 @@
-import { ConnectionOptions } from 'typeorm';
-import ormconfig from './ormconfig';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { getOrmConfig } from './ormconfig';
 
-const ormseedconfig: ConnectionOptions = {
-  ...ormconfig,
+const ormseedconfig: TypeOrmModuleOptions = {
+  ...getOrmConfig(),
   migrations: [__dirname + '/seeds/**/*{.ts,.js}'],
   cli: {
     migrationsDir: 'src/seeds',
