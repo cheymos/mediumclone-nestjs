@@ -23,7 +23,7 @@
     "db:drop": "npm run typeorm schema:drop",
     "db:create": "npm run typeorm migration:generate -- -n",
     "db:migrate": "npm run typeorm migration:run",
-    "db:seed": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config=src/ormseedconfig.ts migration:run"
+    "db:seed": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config=src/configs/ormseedconfig.ts migration:run"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -51,6 +51,7 @@
     "@types/jest": "^26.0.24",
     "@types/node": "^16.0.0",
     "@types/supertest": "^2.0.11",
+    "@types/jsonwebtoken": "^8.5.4",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
     "@typescript-eslint/parser": "^4.28.2",
     "eslint": "^7.30.0",
